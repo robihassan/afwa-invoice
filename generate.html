@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate Invoice - AFWA</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f6f9fc;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #222;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Generate Invoice</h1>
+
+    <label>Customer Name</label>
+    <input type="text" id="customerName">
+
+    <label>Date</label>
+    <input type="date" id="invoiceDate">
+
+    <label>Product Name</label>
+    <input type="text" id="productName">
+
+    <label>Quantity</label>
+    <input type="number" id="quantity">
+
+    <label>Unit Price</label>
+    <input type="number" id="unitPrice">
+
+    <button onclick="addItem()">Add Item</button>
+
+    <table id="invoiceTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+      <tfoot>
+        <tr>
+          <th colspan="3">Grand Total</th>
+          <th id="grandTotal">৳0</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    <button onclick="saveInvoice()">Generate Invoice</button>
+  </div>
+
+  <script>
+    const tableBody = document.querySelector("#invoiceTable tbody");
+    let grandTotal = 0;
+    const invoiceData = [];
+
+    function addItem() {
+      const product = document.getElementById("productName").value;
+      const qty = parseInt(document.getElementById("quantity").value);
+      const price = parseFloat(document.getElementById("unitPrice").value);
+      const total = qty * price;
+
+      grandTotal += total;
+      document.getElementById("grandTotal").innerText = `৳${grandTotal}`;
+
+      const row = `<tr><td>${product}</td><td>${qty}</td><td>৳${price}</td><td>৳${total}</td></tr>`;
+      tableBody.innerHTML += row;
+
+      invoiceData.push({ product, qty, price, total });
+    }
+
+    function saveInvoice() {
+      const name = document.getElementById("customerName").value;
+      const date = document.getElementById("invoiceDate").value;
+
+      const invoice = {
+        customer: name,
+        date: date,
+        items: invoiceData,
+        total: grandTotal
+      };
+
+      // Save to localStorage
+      let allInvoices = JSON.parse(localStorage.getItem("invoices") || "[]");
+      allInvoices.push(invoice);
+      localStorage.setItem("invoices", JSON.stringify(allInvoices));
+
+      alert("Invoice Saved Successfully!");
+      window.location.href = "index.html"; // Go back to dashboard
+    }
+  </script>
+</body>
+</html>
